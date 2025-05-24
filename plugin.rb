@@ -15,8 +15,8 @@ DiscoursePluginRegistry.serialized_current_user_fields << "signature_raw"
 
 after_initialize do
   register_user_custom_field_type("see_signatures", :boolean)
-  register_user_custom_field_type("signature_url", :string, max_length: 32_000)
-  register_user_custom_field_type("signature_raw", :string, max_length: 1000)
+  register_user_custom_field_type("signature_url", :string, max_length: 250)
+  register_user_custom_field_type("signature_raw", :string, max_length: 250)
 
   # add to class and serializer to allow for default value for the setting
   add_to_class(:user, :see_signatures) do
@@ -53,6 +53,18 @@ after_initialize do
       # avoid infinite recursion
       if cooked_sig != user.custom_fields["signature_cooked"]
         user.custom_fields["signature_cooked"] = cooked_sig
+        user.save
+      end
+    end
+
+      # Validate the URL if not in advanced mode
+    if !SiteSetting.signatures_advanced_mode && user.custom_fields["signature_url"]
+      url = user.custom_fields["signature_url"]
+
+      # Strict validation: only HTTPS, only certain image file types, only whitelisted domains
+      unless url =~ /\Ahttps:\/\/.*\.(png|jpe?g|gif)\z/i
+        Rails.logger.warn("[discourse-signatures] Rejected invalid signature_url for user #{user.id}: #{url.inspect}")
+        user.custom_fields["signature_url"] = nil
         user.save
       end
     end
