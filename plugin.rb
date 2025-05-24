@@ -62,7 +62,7 @@ after_initialize do
       url = user.custom_fields["signature_url"]
 
       # Strict validation: only HTTPS, only certain image file types, only whitelisted domains
-      unless url =~ /\Ahttps:\/\/.*\.(png|jpe?g|gif)\z/i
+      unless url =~ /\Ahttps:\/\/[a-zA-Z0-9.\-\/_]+\.(png|jpe?g|gif|webp)(\?[a-zA-Z0-9=&]+)?\z/
         Rails.logger.warn("[discourse-signatures] Rejected invalid signature_url for user #{user.id}: #{url.inspect}")
         user.custom_fields["signature_url"] = nil
         user.save
