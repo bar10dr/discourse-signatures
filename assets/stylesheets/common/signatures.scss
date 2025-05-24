@@ -1,3 +1,8 @@
 .user-signature img {
-  max-width: calc(100% - 5px);
+  max-width: 600px;
+  max-height: 100px;
+  width: auto;
+  height: auto;
+  display: block;
+  margin: 5px auto;
 }
