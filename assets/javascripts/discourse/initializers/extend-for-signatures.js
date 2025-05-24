@@ -37,7 +37,10 @@ function attachSignature(api, siteSettings) {
         return [
           dec.h("hr"),
           dec.h("img.signature-img", {
-            attributes: { src: attrs.user_signature },
+            attributes: { 
+              src: attrs.user_signature,
+              alt: "User signature image",
+            },
           }),
         ];
       }
